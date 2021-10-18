@@ -90,9 +90,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'nftmaker',
-        'USER': os.environ.get('GC_SQL_USERNAME'),
-        'PASSWORD': os.environ.get('GC_SQL_PASSWORD'),
-        'HOST': os.environ.get('GC_SQL_HOST'),  # Or an IP Address that your DB is hosted on
+        'USER': os.environ.get('DB_USERNAME'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),  # Or an IP Address that your DB is hosted on
         'PORT': '5432',
     }
 }
