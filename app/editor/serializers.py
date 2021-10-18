@@ -23,20 +23,6 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = ['id', 'name', 'layers', 'project']
 
-    # def create(self, validated_data):
-    #     group = Group.objects.create(
-    #         name=validated_data['name'],
-    #         project_id=self.context['view'].kwargs.get('project_id')
-    #     )
-    #     return group
-    #
-    # def update(self, instance, validated_data):
-    #     import pdb; pdb.set_trace()
-    #     instance.name = validated_data.get('name', instance.name)
-    #     instance.project_id = self.context['view'].kwargs.get('project_id')
-    #     instance.save()
-    #     return instance
-
 
 class ProjectSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True, read_only=True)
