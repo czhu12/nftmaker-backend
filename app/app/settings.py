@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-&q*4cfq(qgj+avsas@1!-e1j@axwvul5wb!hrwuqigk7ijep8$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'nftmaker-ynywvyqo6a-uc.a.run.app']
+ALLOWED_HOSTS = ['localhost', 'nftmaker-backend.onrender.com']
 
 # Application definition
 
