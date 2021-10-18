@@ -9,4 +9,4 @@ WORKDIR /app
 COPY ./requirements.txt /app/
 RUN pip install -r requirements.txt
 COPY ./app /app/
-CMD PYTHONPATH=/app python manage.py runserver 0.0.0.0:$PORT
+CMD PYTHONPATH=/app python manage.py migrate && PYTHONPATH=/app python manage.py runserver 0.0.0.0:$PORT
