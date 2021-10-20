@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from editor.models import Project, Group, Layer, Asset
 from editor.serializers import ProjectSerializer, GroupSerializer, LayerSerializer, AssetSerializer
 from rest_framework.viewsets import ViewSetMixin, ModelViewSet
-
+from rest_framework import parsers
 
 class ProjectViewSet(viewsets.ModelViewSet):
     """
@@ -68,7 +68,8 @@ class AssetViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, Destr
     """
     queryset = Asset.objects.all()
     serializer_class = AssetSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    parser_classes = (parsers.MultiPartParser,)
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         layer = Layer.objects.get(self.kwargs.get('layer_id'))
