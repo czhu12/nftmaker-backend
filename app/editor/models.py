@@ -6,6 +6,8 @@ from users.models import User
 class Project(TimestampedUUIDModel):
     name = models.CharField(max_length=256)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="projects")
+    ispublic = models.BooleanField(default=False)
+    listed = models.BooleanField(default=False)
 
 
 class Group(TimestampedUUIDModel):

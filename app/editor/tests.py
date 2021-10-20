@@ -87,3 +87,28 @@ class RegisterViewTests(TestCase):
             HTTP_AUTHORIZATION='Token ' + token,
         )
         self.assertTrue(response.json()['name'] == 'Layer 1')
+
+    def test_crud_assets(self):
+        # First create the user
+        token = self._create_user()
+        client = APIClient()
+        # Create project
+        project = client.post(reverse('project-list'), {'name': 'Untitled'}, HTTP_AUTHORIZATION='Token ' + token).json()['id']
+        group = client.post(
+            reverse('group-list'),
+            {'name': 'Group', 'project': project},
+            HTTP_AUTHORIZATION='Token ' + token,
+        ).json()['id']
+
+        layer = client.post(
+            reverse('layer-list'),
+            {'name': 'Layer 1', 'group': group, 'order': 1, 'rarity': 1},
+            HTTP_AUTHORIZATION='Token ' + token,
+        ).json()['id']
+
+        # Create asset
+        response = client.post(
+            reverse('asset-list'),
+            {'name': 'Asset 1', 'layer': layer, 'rarity': 1},
+            HTTP_AUTHORIZATION='Token ' + token,
+        )

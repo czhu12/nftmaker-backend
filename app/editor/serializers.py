@@ -5,7 +5,7 @@ from rest_framework import serializers
 class AssetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asset
-        fields = ['id', 'name', 'rarity', 'image_file']
+        fields = ['id', 'name', 'rarity', 'image_file', 'layer']
 
 
 class LayerSerializer(serializers.ModelSerializer):
