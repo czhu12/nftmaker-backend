@@ -87,6 +87,12 @@ class RegisterViewTests(TestCase):
             HTTP_AUTHORIZATION='Token ' + token,
         )
         self.assertTrue(response.json()['name'] == 'Layer 1')
+        uuid = response.json()['id']
+        response = client.put(
+            reverse('layer-detail', kwargs={'pk': uuid}),
+            {'name': 'Layer 2'},
+            HTTP_AUTHORIZATION='Token ' + token,
+        )
 
     def test_crud_assets(self):
         # First create the user

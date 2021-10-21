@@ -57,10 +57,6 @@ class LayerViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, Destr
     serializer_class = LayerSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        group = Group.objects.get(self.kwargs.get('group_id'))
-        return Layer.objects.filter(group=group)
-
 
 class AssetViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, DestroyModelMixin):
     """
@@ -70,7 +66,3 @@ class AssetViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, Destr
     serializer_class = AssetSerializer
     parser_classes = (parsers.MultiPartParser,)
     permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        layer = Layer.objects.get(self.kwargs.get('layer_id'))
-        return Asset.objects.filter(layer=layer)
