@@ -8,6 +8,8 @@ class Project(TimestampedUUIDModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="projects")
     ispublic = models.BooleanField(default=False)
     listed = models.BooleanField(default=False)
+    width = models.IntegerField(default=512)
+    height = models.IntegerField(default=512)
 
 
 class Group(TimestampedUUIDModel):
