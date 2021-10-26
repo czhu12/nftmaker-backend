@@ -2,8 +2,42 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient, force_authenticate
 
-from editor.models import Group
+from editor.models import Group, User, Project
 from users.models import User
+import factory
+
+
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = User
+
+    username = factory.Sequence(lambda n: 'chris{}'.format(n))
+    email = factory.Sequence(lambda n: 'chris{}@example.com'.format(n))
+
+
+class ProjectFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Project
+
+    name = 'Project'
+    ispublic = False
+    user = factory.SubFactory(UserFactory)
+
+
+class ProjectScopeTests(TestCase):
+    def test_public_projects(self):
+        project = ProjectFactory.create(ispublic=True, listed=True)
+        client = APIClient()
+        response = client.get(reverse('project-list'), {'filter': 'all'})
+        self.assertTrue(len(response.json()['results']) == 1)
+
+
+    def test_private_projects(self):
+        ProjectFactory.create(ispublic=False, listed=False)
+        ProjectFactory.create(ispublic=True, listed=False)
+        client = APIClient()
+        response = client.get(reverse('project-list'), {'filter': 'all'})
+        self.assertTrue(len(response.json()['results']) == 0)
 
 
 class RegisterViewTests(TestCase):

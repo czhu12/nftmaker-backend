@@ -19,15 +19,21 @@ class ProjectViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        user = self.request.user
-        return Project.objects.filter(user=user)
+        if self.request.GET.get('filter') == 'all':
+            return Project.objects.filter(ispublic=True, listed=True)
+        else:
+            user = self.request.user
+            return Project.objects.filter(user=user)
 
     def retrieve(self, request, pk=None):
         queryset = self.get_queryset()
         project = get_object_or_404(queryset, pk=pk)
+        if not project.ispublic and request.user is None or request.user != project.user:
+            return Response(data, status=status.HTTP_403_FORBIDDEN)
+
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
 
