@@ -8,7 +8,7 @@ class Project(TimestampedUUIDModel):
     description = models.TextField(default="")
 
     website = models.CharField(default="", max_length=256)
-    opeansea = models.CharField(default="", max_length=256)
+    opensea = models.CharField(default="", max_length=256)
     twitter = models.CharField(default="", max_length=256)
     discord = models.CharField(default="", max_length=256)
     etherscan = models.CharField(default="", max_length=256)
