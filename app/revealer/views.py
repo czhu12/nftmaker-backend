@@ -56,9 +56,9 @@ def _fake_image(nft_reveal, token_id):
     return s3_file(path)
 
 
-def _reveal_metadata(slug, token_id):
-    s3_path = str(slug) + "/metadata/" + str(token_id)
-    return JsonResponse(s3_file(s3_path))
+def _reveal_metadata(nft_reveal, token_id):
+    s3_path = str(nft_reveal.slug) + "/metadata/" + str(token_id)
+    return json.loads(s3_file(s3_path))
 
 
 def metadata(request, slug, token_id):
