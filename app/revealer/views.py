@@ -21,7 +21,7 @@ def latest_token_id_for_contract(contract_address):
     #    private_key=os.environ.get('PRIVATE_KEY'),
     # )
     # response = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
-    return 4
+    return 0
 
 
 def s3_file(path):
