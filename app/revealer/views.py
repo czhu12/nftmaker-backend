@@ -50,7 +50,7 @@ def _fake_metadata(nft_revealer, token_id):
         "dna": "45e240b0b05aa88c4f70c7e07af0e2d1d1abed1c",
         "name": "#{}".format(token_id),
         "description": "Pre-Reveal Dope Dinos",
-        "image": HOST_DOMAIN + image_url,
+        "image": "https://" + HOST_DOMAIN + image_url,
         "edition": 0,
         "date": 1634112372805,
         "attributes": [],
