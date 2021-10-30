@@ -32,7 +32,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         project = get_object_or_404(queryset, pk=pk)
         if not project.ispublic and request.user is None or request.user != project.user:
-            return Response(data, status=status.HTTP_403_FORBIDDEN)
+            return Response("FORBIDDEN", status=status.HTTP_403_FORBIDDEN)
 
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
