@@ -9,6 +9,7 @@ from editor.models import Project, Group, Layer, Asset
 from editor.serializers import ProjectSerializer, GroupSerializer, LayerSerializer, AssetSerializer
 from rest_framework.viewsets import ViewSetMixin, ModelViewSet
 from rest_framework import parsers
+from editor.permissions import OwnDataPermission
 
 class ProjectViewSet(viewsets.ModelViewSet):
     """
@@ -52,7 +53,7 @@ class GroupViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, Destr
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, OwnDataPermission]
 
 
 class LayerViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, DestroyModelMixin):
@@ -61,7 +62,7 @@ class LayerViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, Destr
     """
     queryset = Layer.objects.all()
     serializer_class = LayerSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, OwnDataPermission]
 
 
 class AssetViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, DestroyModelMixin):
@@ -71,4 +72,4 @@ class AssetViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, Destr
     queryset = Asset.objects.all()
     serializer_class = AssetSerializer
     parser_classes = (parsers.MultiPartParser,)
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, OwnDataPermission]
