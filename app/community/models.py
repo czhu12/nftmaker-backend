@@ -26,7 +26,7 @@ class Contract(TimestampedUUIDModel):
     address = models.CharField(max_length=256, unique=True)
     symbol = models.CharField(max_length=256, blank=True)
     block_number = models.IntegerField(default=0)
-    balance = models.BigIntegerField(default=0)
+    balance = models.CharField(default='0', max_length=256)
     contract_type = models.CharField(max_length=64, blank=True, choices=ContractType.choices)
     community = models.OneToOneField(
         Community,
