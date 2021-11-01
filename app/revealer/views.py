@@ -81,9 +81,9 @@ def image(request, slug, token_id):
     nft_reveal = models.NftReveal.objects.get(slug=slug)
     if nft_reveal is None:
         return HttpResponseNotFound()
-    if nft_reveal.latest_token_id is None or token_id > nft_reveal.latest_token_id:
-        f = _fake_image(nft_reveal, token_id)
+    if nft_reveal.latest_token_id is None or nft_reveal.latest_token_id > token_id:
+        f = _reveal_image(nft_reveal, token_id)
         return HttpResponse(f, content_type="image/png")
     else:
-        f = _reveal_image(nft_reveal, token_id)
+        f = _fake_image(nft_reveal, token_id)
         return HttpResponse(f, content_type="image/png")
