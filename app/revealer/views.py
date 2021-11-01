@@ -2,26 +2,21 @@ import boto3
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from django.urls.base import reverse
 from web3 import Web3
-from app.settings import HOST_DOMAIN, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+from app.settings import HOST_DOMAIN, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, ALCHEMY_PROVIDER
 from revealer import models
 import json
 S3_BUCKET_NAME = "nft-revealer"
 
 
-#with open("resources/solidity/abi/IERC721Enumerable.json", "r") as f:
-#    IERC721_ENUMERABLE_ABI = json.load(f)
+with open("resources/solidity/abi/IERC721Enumerable.json", "r") as f:
+    IERC721_ENUMERABLE_ABI = json.load(f)
 
 
 def latest_token_id_for_contract(contract_address):
-    # w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))
-    # nft_contract = w3.eth.contract(address=nft_reveal.contract_address, abi=IERC721_ENUMERABLE_ABI)
-    # transaction = nft_contract.functions.totalSupply().buildTransaction()
-    # signed_txn = w3.eth.account.sign_transaction(
-    #    transaction,
-    #    private_key=os.environ.get('PRIVATE_KEY'),
-    # )
-    # response = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
-    return 0
+    w3 = Web3(Web3.HTTPProvider(ALCHEMY_PROVIDER))
+    nft_contract = w3.eth.contract(address=Web3.toChecksumAddress(contract_address), abi=IERC721_ENUMERABLE_ABI)
+    total_supply = nft_contract.functions.totalSupply().call()
+    return total_supply
 
 
 def s3_file(path):

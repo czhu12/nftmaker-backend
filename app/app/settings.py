@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'users',
     'editor',
     'revealer',
+    'community',
 ]
 
 MIDDLEWARE = [
@@ -164,3 +165,4 @@ if 'test' in sys.argv or 'test_coverage' in sys.argv or os.environ.get('DEV') ==
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
 
 HOST_DOMAIN = os.environ.get("HOST_DOMAIN", default="backend.raremints.club")
+ALCHEMY_PROVIDER = os.environ.get("ALCHEMY_PROVIDER")
