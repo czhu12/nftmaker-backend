@@ -46,7 +46,7 @@ def create_community_from_metadata(data):
 
 
 class ContractViewSet(viewsets.ModelViewSet):
-    queryset = Contract.objects.all().order_by('-block_number')
+    queryset = Contract.objects.order_by('-block_number')
     serializer_class = ContractSerializer
 
 
