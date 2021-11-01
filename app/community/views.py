@@ -1,7 +1,7 @@
 import os
 from django.http.response import HttpResponse
 import requests
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from community.serializers import ContractSerializer
 from community.models import Contract, Community, CommunalCanvas
 from rest_framework.response import Response
@@ -48,6 +48,18 @@ def create_community_from_metadata(data):
 class ContractViewSet(viewsets.ModelViewSet):
     queryset = Contract.objects.order_by('-block_number')
     serializer_class = ContractSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+          contract = Contract.objects.get(address=serializer.validated_data['address'])
+          contract.__dict__.update(**serializer.validated_data)
+          contract.save()
+        except Contract.DoesNotExist:
+          self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class CommunityViewSet(viewsets.ViewSet):
