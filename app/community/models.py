@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 from base.models import TimestampedUUIDModel
 from users.models import User
@@ -16,13 +17,22 @@ class Community(TimestampedUUIDModel):
 
 
 class Contract(TimestampedUUIDModel):
+
+    class ContractType(models.TextChoices):
+        ERC20 = 'ERC20', _('ERC20')
+        ERC721 = 'ERC721', _('ERC721')
+        ERC1155 = 'ERC1155', _('ERC1155')
+
     address = models.CharField(max_length=256, unique=True)
     symbol = models.CharField(max_length=256, blank=True)
-    contract_type = models.CharField(max_length=64, blank=True)
+    block_number = models.IntegerField(default=0)
+    contract_type = models.CharField(max_length=64, blank=True, choices=ContractType.choices)
     community = models.OneToOneField(
         Community,
         on_delete=models.CASCADE,
         related_name="contract",
+        null=True,
+        blank=True,
     )
 
 

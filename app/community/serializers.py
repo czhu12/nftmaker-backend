@@ -5,7 +5,7 @@ from rest_framework import serializers
 class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
-        fields = ['id', 'address']
+        fields = ['id', 'address', 'contract_type']
 
 
 class CommunalCanvasSerializer(serializers.ModelSerializer):

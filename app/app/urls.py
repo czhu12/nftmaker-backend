@@ -20,6 +20,6 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('editor/', include('editor.urls')),
     path('revealer/', include('revealer.urls')),
-    path('c/', include('community.urls')),
+    path('', include('community.urls')),
     path('admin/', admin.site.urls),
 ]

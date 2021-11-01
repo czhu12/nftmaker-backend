@@ -2,6 +2,7 @@ import os
 from django.http.response import HttpResponse
 import requests
 from rest_framework import viewsets
+from community.serializers import ContractSerializer
 from community.models import Contract, Community, CommunalCanvas
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -42,6 +43,12 @@ def create_community_from_metadata(data):
   communal_canvas = CommunalCanvas(community=community)
   communal_canvas.save()
   return community
+
+
+class ContractViewSet(viewsets.ModelViewSet):
+    queryset = Contract.objects.all()
+    serializer_class = ContractSerializer
+
 
 class CommunityViewSet(viewsets.ViewSet):
     queryset = Contract.objects.all()
