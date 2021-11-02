@@ -25,7 +25,7 @@ def _moralis_get_nft_contract(address):
         },
     )
     if response.status_code != 200:
-        return HttpResponse(status=404)
+        raise Http404
     return response.json()
 
 
