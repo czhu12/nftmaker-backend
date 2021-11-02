@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from community.serializers import CommunitySerializer
 from django.db import transaction
 
-CHAIN = "rinkeby"
+CHAIN = "eth"
 
 
 def _moralis_get_nft_contract(address):
