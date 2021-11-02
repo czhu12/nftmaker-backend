@@ -94,11 +94,13 @@ class ContractViewTests(TestCase):
                 'address': '0x12345',
                 'balance': '10000',
                 'block_number': 100,
+                'block_timestamp': 10000,
                 'contract_type': 'ERC721'
             },
         )
         response = response.json()
         self.assertTrue(response['address'] == '0x12345')
+        self.assertTrue(response['block_timestamp'] == 10000)
 
         response = self.client.post(
             reverse('contract-list'),
