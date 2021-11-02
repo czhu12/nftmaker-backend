@@ -7,7 +7,7 @@ class ContractSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contract
-        fields = ['id', 'address', 'balance', 'contract_type', 'block_number']
+        fields = ['id', 'address', 'balance', 'contract_type', 'block_number', 'created']
 
 
 class MessageSerializer(serializers.ModelSerializer):
