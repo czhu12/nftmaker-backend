@@ -2,8 +2,6 @@ from django.test import TestCase
 from django.urls import reverse
 from revealer.models import NftReveal
 import factory
-import mock
-import json
 from unittest.mock import patch
 
 

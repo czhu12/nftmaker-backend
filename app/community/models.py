@@ -16,8 +16,13 @@ class Community(TimestampedUUIDModel):
     etherscan = models.CharField(max_length=256, null=True, blank=True)
 
 
-class Contract(TimestampedUUIDModel):
+class Message(TimestampedUUIDModel):
+    token_identifier = models.CharField(max_length=256)
+    message = models.TextField()
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name="messages")
 
+
+class Contract(TimestampedUUIDModel):
     class ContractType(models.TextChoices):
         ERC20 = 'ERC20', _('ERC20')
         ERC721 = 'ERC721', _('ERC721')
