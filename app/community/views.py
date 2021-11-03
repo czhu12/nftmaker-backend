@@ -18,7 +18,7 @@ CHAIN = "eth"
 def _moralis_get_nft_contract(address):
     response = requests.get(
         'https://deep-index.moralis.io/api/v2/nft/{}/metadata?chain={}&format=decimal'
-        .format(address, CHAIN),
+        .format(address.lower(), CHAIN),
         headers={
             'accept': 'application/json',
             'X-API-Key': os.environ.get('MORALIS_API_KEY')
@@ -30,12 +30,16 @@ def _moralis_get_nft_contract(address):
 
 
 def create_community_for_contract(name, contract):
-    community = Community(
-        name=name,
-        slug=contract.address,
-        etherscan="https://etherscan.io/contract/{}".format(contract.address),
-    )
-    community.save()
+    try:
+        community = Community.objects.get(slug=contract.address.lower())
+    except Community.DoesNotExist:
+        community = Community(
+            name=name,
+            slug=contract.address.lower(),
+            etherscan="https://etherscan.io/contract/{}".format(contract.address.lower()),
+        )
+        community.save()
+
     contract.community = community
     contract.save()
 
@@ -46,7 +50,7 @@ def create_community_for_contract(name, contract):
 
 @transaction.atomic
 def create_community_from_metadata(data):
-    contract = Contract(address=data['token_address'],
+    contract = Contract(address=data['token_address'].lower(),
                         contract_type=data['contract_type'],
                         symbol=data['symbol'])
     contract.save()
@@ -63,7 +67,7 @@ class ContractViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         try:
             contract = Contract.objects.get(
-                address=serializer.validated_data['address'])
+                address=serializer.validated_data['address'].lower())
             contract.__dict__.update(**serializer.validated_data)
             contract.save()
         except Contract.DoesNotExist:
@@ -77,10 +81,10 @@ class ContractViewSet(viewsets.ModelViewSet):
 class CommunityViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         try:
-            contract = Contract.objects.get(address=pk)
+            contract = Contract.objects.get(address=pk.lower())
             community = contract.community
             if not community:
-                community = create_community_for_contract(contract.address, contract)
+                community = create_community_for_contract(contract.address.lower(), contract)
         except Contract.DoesNotExist:
             data = _moralis_get_nft_contract(pk)
             community = create_community_from_metadata(data)
@@ -90,7 +94,7 @@ class CommunityViewSet(viewsets.ViewSet):
 
 class CommunalCanvasViewSet(viewsets.ViewSet):
     def update(self, request, pk=None):
-        contract = CommunalCanvas.objects.get(address=pk)
+        contract = CommunalCanvas.objects.get(address=pk.lower())
         return Response(serializer.data)
 
 
