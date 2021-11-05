@@ -27,7 +27,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
-    public_address = AddressField(max_length=256, unique=True)
+    public_address = AddressField(max_length=256, unique=True, null=True, blank=True)
     nonce = models.IntegerField(default=generate_random_nonce)
 
     date_joined = models.DateTimeField(default=timezone.now)
