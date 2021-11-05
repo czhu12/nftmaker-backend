@@ -3,6 +3,14 @@ from django.db import models
 from base.models import TimestampedUUIDModel
 
 
+class AddressField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        super(AddressField, self).__init__(*args, **kwargs)
+
+    def get_prep_value(self, value):
+        return str(value).lower()
+
+
 class Community(TimestampedUUIDModel):
     slug = models.CharField(max_length=256, unique=True)
     name = models.CharField(max_length=256)
@@ -27,7 +35,7 @@ class Contract(TimestampedUUIDModel):
         ERC721 = 'ERC721', _('ERC721')
         ERC1155 = 'ERC1155', _('ERC1155')
 
-    address = models.CharField(max_length=256, unique=True)
+    address = AddressField(max_length=256, unique=True)
     symbol = models.CharField(max_length=256, blank=True)
     block_number = models.IntegerField(default=0)
     block_timestamp = models.BigIntegerField(default=0)

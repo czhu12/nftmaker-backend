@@ -8,6 +8,7 @@ import factory
 import json
 
 
+
 class CommunityFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Community
