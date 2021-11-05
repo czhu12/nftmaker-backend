@@ -3,7 +3,7 @@ import os
 from django.http.response import HttpResponse
 import requests
 from rest_framework import viewsets, status
-from community.serializers import ContractSerializer, MessageSerializer
+from community.serializers import ContractSerializer, MessageSerializer, CommunalCanvasSerializer
 from community.models import Contract, Community, CommunalCanvas, Message
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -92,10 +92,9 @@ class CommunityViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-class CommunalCanvasViewSet(viewsets.ViewSet):
-    def update(self, request, pk=None):
-        contract = CommunalCanvas.objects.get(address=pk.lower())
-        return Response(serializer.data)
+class CommunalCanvasViewSet(viewsets.ModelViewSet):
+    serializer_class = CommunalCanvasSerializer
+    queryset = CommunalCanvas.objects.all()
 
 
 class MessagesViewSet(viewsets.ModelViewSet):

@@ -2,9 +2,10 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient, force_authenticate
 
-from community.models import Contract, Community, Message
+from community.models import Contract, Community, Message, CommunalCanvas
 from unittest.mock import patch
 import factory
+import json
 
 
 class CommunityFactory(factory.django.DjangoModelFactory):
@@ -13,6 +14,14 @@ class CommunityFactory(factory.django.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: 'community-{}'.format(n))
     slug = factory.Sequence(lambda n: 'community-{}'.format(n))
+
+class CommunalCanvasFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = CommunalCanvas
+
+    community = factory.SubFactory(CommunityFactory)
+    image = {'data': []}
+
 
 
 class MessageFactory(factory.django.DjangoModelFactory):
@@ -124,3 +133,21 @@ class ContractViewTests(TestCase):
             },
         )
         self.assertTrue(len(Contract.objects.all()) == 2)
+
+class CommunalCanvasTests(TestCase):
+    def test_update(self):
+        communal_canvas = CommunalCanvasFactory.create()
+        client = APIClient()
+        response = client.put(
+            reverse('communal_canvas-detail', kwargs={
+                'pk': communal_canvas.id,
+            }),
+            {
+               'image': json.dumps({
+                    'data': [{'x': 0, 'y': 0, 'color': 'black'}]
+                })
+            },
+        )
+        response.json()
+        communal_canvas.refresh_from_db()
+        self.assertTrue(len(communal_canvas.image['data']), 1)

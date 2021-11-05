@@ -1,7 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from base.models import TimestampedUUIDModel
-from users.models import User
 
 
 class Community(TimestampedUUIDModel):
