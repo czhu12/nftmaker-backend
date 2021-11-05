@@ -6,6 +6,18 @@ from rest_framework import status
 from rest_framework.response import Response
 from users.serializers import RegisterSerializer
 from rest_framework import generics
+import json
+
+def obtain_auth_token_via_nonce(request):
+    body = json.loads(request.body)
+    body['signature']
+    user = User.objects.get(public_address=body['public_address'])
+    msg = "I am signing my one-time nonce: {}".format(user.nonce)
+    message_hash = defunct_hash_message(text=message)
+    address = w3.eth.account.recoverHash(message_hash, signature=signature)
+    return address
+
+
 
 
 class RegisterView(generics.CreateAPIView):

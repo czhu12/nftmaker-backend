@@ -1,14 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django.db import models
-from base.models import TimestampedUUIDModel
-
-
-class AddressField(models.CharField):
-    def __init__(self, *args, **kwargs):
-        super(AddressField, self).__init__(*args, **kwargs)
-
-    def get_prep_value(self, value):
-        return str(value).lower()
+from base.models import TimestampedUUIDModel, AddressField
 
 
 class Community(TimestampedUUIDModel):

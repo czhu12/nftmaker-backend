@@ -1,8 +1,10 @@
+import json
 from django.http import Http404
+from django.core.cache import cache
 import os
 from django.http.response import HttpResponse
 import requests
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from community.serializers import ContractSerializer, MessageSerializer, CommunalCanvasSerializer
 from community.models import Contract, Community, CommunalCanvas, Message
 from rest_framework.response import Response
@@ -109,15 +111,32 @@ class MessagesViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+def retrieve_cached_json(cache_key, fetch, force=False, expiration=600):
+    cached = cache.get(cache_key)
+    if not cached or force:
+        data = fetch()
+        cache.set(cache_key, json.dumps(data))
+        return data
+    else:
+        return json.loads(cached)
+
+
 class NftOwnership(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
-        response = requests.get(
-            'https://deep-index.moralis.io/api/v2/{}/nft?chain={}&format=decimal'
-            .format(pk, CHAIN),
-            headers={
-                'accept': 'application/json',
-                'X-API-Key': os.environ.get('MORALIS_API_KEY')
-            },
-        )
+        cache_key = f'NFTOwnership-retrieve-{pk}'
+        def _fetch():
+            response = requests.get(
+                'https://deep-index.moralis.io/api/v2/{}/nft?chain={}&format=decimal'
+                .format(pk, CHAIN),
+                headers={
+                    'accept': 'application/json',
+                    'X-API-Key': os.environ.get('MORALIS_API_KEY')
+                },
+            )
+            data = response.json()
+            return data
 
-        return JsonResponse(response.json())
+        data = retrieve_cached_json(cache_key, _fetch)
+
+
+        return JsonResponse(data)

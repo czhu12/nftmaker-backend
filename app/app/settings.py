@@ -166,3 +166,10 @@ if 'test' in sys.argv or 'test_coverage' in sys.argv or os.environ.get('DEV') ==
 
 HOST_DOMAIN = os.environ.get("HOST_DOMAIN", default="backend.raremints.club")
 ALCHEMY_PROVIDER = os.environ.get("ALCHEMY_PROVIDER")
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'cachetable',
+    }
+}

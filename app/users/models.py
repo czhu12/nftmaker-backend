@@ -1,5 +1,6 @@
 import random
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from base.models import AddressField
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
@@ -25,8 +26,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    nonce = models.IntegerField(default=generate_random_nonce)
 
+    public_address = AddressField(max_length=256, unique=True)
+    nonce = models.IntegerField(default=generate_random_nonce)
 
     date_joined = models.DateTimeField(default=timezone.now)
     USERNAME_FIELD = 'username'
