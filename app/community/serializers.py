@@ -30,7 +30,7 @@ class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
         fields = [
-            'id', 'slug', 'name', 'description', 'website', 'opensea',
+            'id', 'slug', 'symbol', 'name', 'description', 'website', 'opensea',
             'twitter', 'discord', 'etherscan', 'contract', 'communal_canvas',
             'messages'
         ]
