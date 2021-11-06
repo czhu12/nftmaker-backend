@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='public_address',
-            field=base.models.AddressField(blank=True, max_length=256, unique=True),
+            field=base.models.AddressField(blank=True, max_length=256, null=True),
         ),
     ]
