@@ -8,7 +8,6 @@ import factory
 import json
 
 
-
 class CommunityFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Community
@@ -16,13 +15,13 @@ class CommunityFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'community-{}'.format(n))
     slug = factory.Sequence(lambda n: 'community-{}'.format(n))
 
+
 class CommunalCanvasFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = CommunalCanvas
 
     community = factory.SubFactory(CommunityFactory)
     image = {'data': []}
-
 
 
 class MessageFactory(factory.django.DjangoModelFactory):
@@ -55,7 +54,7 @@ def mock_moralis_nft_contract(address):
 
 
 @patch('community.views._moralis_get_nft_contract',
-        side_effect=mock_moralis_nft_contract)
+       side_effect=mock_moralis_nft_contract)
 class ContractViewTests(TestCase):
     def test_get_new_community_by_new_contract(self, _):
         response = self.client.get(
@@ -77,12 +76,12 @@ class ContractViewTests(TestCase):
         self.assertTrue('communal_canvas' in response.json())
         self.assertTrue(len(response.json()['messages']) == 0)
 
-
     def test_get_messages(self, _):
         community = CommunityFactory.create()
         message_1 = MessageFactory.create(community=community)
         message_2 = MessageFactory.create(community=community)
-        response = self.client.get(reverse('messages-list'), {'community': community.id})
+        response = self.client.get(reverse('messages-list'),
+                                   {'community': community.id})
         self.assertTrue(len(response.json()) == 2)
 
     def test_create_message(self, _):
@@ -135,20 +134,29 @@ class ContractViewTests(TestCase):
         )
         self.assertTrue(len(Contract.objects.all()) == 2)
 
+
 class CommunalCanvasTests(TestCase):
     def test_update(self):
         communal_canvas = CommunalCanvasFactory.create()
         client = APIClient()
         response = client.put(
-            reverse('communal_canvas-detail', kwargs={
-                'pk': communal_canvas.id,
-            }),
+            reverse('communal_canvas-detail',
+                    kwargs={
+                        'pk': communal_canvas.id,
+                    }),
             {
-               'image': json.dumps({
-                    'data': [{'x': 0, 'y': 0, 'color': 'black'}]
-                })
+                'image': json.dumps(
+                    {'data': [{
+                        'x': 0,
+                        'y': 0,
+                        'color': 'black'
+                    }]})
             },
         )
         response.json()
         communal_canvas.refresh_from_db()
         self.assertTrue(len(communal_canvas.image['data']), 1)
+
+class MessageTests(TestCase):
+    def test_list(self):
+        pass
