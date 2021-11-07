@@ -7,7 +7,7 @@ class ContractSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contract
-        fields = ['id', 'address', 'balance', 'contract_type', 'block_number', 'block_timestamp']
+        fields = ['id', 'address', 'symbol', 'balance', 'contract_type', 'block_number', 'block_timestamp']
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -30,7 +30,7 @@ class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
         fields = [
-            'id', 'slug', 'symbol', 'name', 'description', 'website', 'opensea',
+            'id', 'slug', 'name', 'description', 'website', 'opensea',
             'twitter', 'discord', 'etherscan', 'contract', 'communal_canvas',
             'messages'
         ]
