@@ -29,6 +29,7 @@ class Contract(TimestampedUUIDModel):
 
     address = AddressField(max_length=256, unique=True)
     symbol = models.CharField(max_length=256, blank=True)
+    name = models.CharField(max_length=256, blank=True)
     block_number = models.IntegerField(default=0)
     block_timestamp = models.BigIntegerField(default=0)
     balance = models.CharField(default='0', max_length=256)
