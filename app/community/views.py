@@ -41,12 +41,12 @@ def create_community_for_contract(name, contract):
             etherscan="https://etherscan.io/contract/{}".format(contract.address),
         )
         community.save()
+        communal_canvas = CommunalCanvas(community=community)
+        communal_canvas.save()
 
     contract.community = community
     contract.save()
 
-    communal_canvas = CommunalCanvas(community=community)
-    communal_canvas.save()
     return community
 
 
