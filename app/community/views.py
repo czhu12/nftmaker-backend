@@ -107,7 +107,7 @@ class MessagesViewSet(viewsets.ModelViewSet):
         if not community_id:
             raise Http404
         community = Community.objects.get(pk=community_id)
-        serializer = self.get_serializer(community.messages, many=True)
+        serializer = self.get_serializer(community.messages.order_by('-created'), many=True)
         return Response(serializer.data)
 
 
