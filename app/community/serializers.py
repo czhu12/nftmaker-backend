@@ -1,4 +1,4 @@
-from community.models import Community, Contract, CommunalCanvas, Message
+from community.models import Community, Contract, CommunalCanvas, Message, Reply
 from rest_framework import serializers
 
 
@@ -10,10 +10,17 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = ['id', 'address', 'symbol', 'balance', 'name', 'contract_type', 'block_number', 'block_timestamp']
 
 
+class ReplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reply
+        fields = ['id', 'body', 'message']
+
 class MessageSerializer(serializers.ModelSerializer):
+    replies = ReplySerializer(many=True, read_only=True)
+
     class Meta:
         model = Message
-        fields = ['token_identifier', 'message', 'created', 'community']
+        fields = ['token_identifier', 'body', 'created', 'community', 'replies']
 
 
 class CommunalCanvasSerializer(serializers.ModelSerializer):
@@ -25,7 +32,6 @@ class CommunalCanvasSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     contract = ContractSerializer(read_only=True)
     communal_canvas = CommunalCanvasSerializer(read_only=True)
-    messages = MessageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Community

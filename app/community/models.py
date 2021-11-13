@@ -17,8 +17,14 @@ class Community(TimestampedUUIDModel):
 
 class Message(TimestampedUUIDModel):
     token_identifier = models.CharField(max_length=256)
-    message = models.TextField()
+    body = models.TextField()
     community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name="messages")
+
+
+class Reply(TimestampedUUIDModel):
+    token_identifier = models.CharField(max_length=256)
+    body = models.TextField()
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="replies")
 
 
 class Contract(TimestampedUUIDModel):

@@ -5,8 +5,8 @@ import os
 from django.http.response import HttpResponse
 import requests
 from rest_framework import viewsets, status, permissions
-from community.serializers import ContractSerializer, MessageSerializer, CommunalCanvasSerializer
-from community.models import Contract, Community, CommunalCanvas, Message
+from community.serializers import ContractSerializer, MessageSerializer, CommunalCanvasSerializer, ReplySerializer
+from community.models import Contract, Community, CommunalCanvas, Message, Reply
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -97,6 +97,10 @@ class CommunityViewSet(viewsets.ViewSet):
 class CommunalCanvasViewSet(viewsets.ModelViewSet):
     serializer_class = CommunalCanvasSerializer
     queryset = CommunalCanvas.objects.all()
+
+
+class RepliesViewSet(viewsets.ModelViewSet):
+    serializer_class = ReplySerializer
 
 
 class MessagesViewSet(viewsets.ModelViewSet):

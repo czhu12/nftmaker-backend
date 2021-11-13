@@ -9,6 +9,7 @@ router.register(r'nft', views.NftOwnership, basename="nft-ownership")
 router.register(r'community', views.CommunityViewSet, basename="community")
 router.register(r'communal_canvas', views.CommunalCanvasViewSet, basename="communal_canvas")
 router.register(r'messages', views.MessagesViewSet, basename="messages")
+router.register(r'replies', views.RepliesViewSet, basename="replies")
 router.register(r'contracts', views.ContractViewSet, basename="contract")
 
 urlpatterns = [

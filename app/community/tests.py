@@ -29,7 +29,7 @@ class MessageFactory(factory.django.DjangoModelFactory):
         model = Message
 
     token_identifier = factory.Sequence(lambda n: '{}'.format(n))
-    message = 'Hello world!'
+    body = 'Hello world!'
     community = factory.SubFactory(CommunityFactory)
 
 
@@ -91,7 +91,7 @@ class ContractViewTests(TestCase):
             {
                 'token_identifier': '1',
                 'community': community.id,
-                'message': 'Hello world!',
+                'body': 'Hello world!',
             },
         )
         self.assertTrue(response.status_code == 201)
@@ -157,6 +157,20 @@ class CommunalCanvasTests(TestCase):
         communal_canvas.refresh_from_db()
         self.assertTrue(len(communal_canvas.image['data']), 1)
 
+
 class MessageTests(TestCase):
     def test_list(self):
         pass
+
+
+class ReplyTests(TestCase):
+    def test_list(self):
+        client = APIClient()
+        message = MessageFactory.create()
+        response = client.post(reverse('replies-list'), {
+            'token_identifier': '1',
+            'body': '12345',
+            'message': message.id,
+        })
+        self.assertTrue(response.json()['body'] == '12345')
+        self.assertTrue(response.json()['token_identifier'] == '1')
