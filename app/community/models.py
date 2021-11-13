@@ -56,3 +56,15 @@ class CommunalCanvas(TimestampedUUIDModel):
         on_delete=models.CASCADE,
         related_name="communal_canvas",
     )
+
+
+class Pixel(TimestampedUUIDModel):
+    color = models.IntegerField()
+    x = models.IntegerField()
+    y = models.IntegerField()
+    token_identifier = models.CharField(max_length=256)
+    communal_canvas = models.ForeignKey(
+        CommunalCanvas,
+        on_delete=models.CASCADE,
+        related_name="pixels",
+    )

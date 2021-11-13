@@ -21,7 +21,7 @@ class CommunalCanvasFactory(factory.django.DjangoModelFactory):
         model = CommunalCanvas
 
     community = factory.SubFactory(CommunityFactory)
-    image = {'data': []}
+    image = {}
 
 
 class MessageFactory(factory.django.DjangoModelFactory):
@@ -135,27 +135,25 @@ class ContractViewTests(TestCase):
         self.assertTrue(len(Contract.objects.all()) == 2)
 
 
-class CommunalCanvasTests(TestCase):
+class PixelTests(TestCase):
     def test_update(self):
         communal_canvas = CommunalCanvasFactory.create()
         client = APIClient()
-        response = client.put(
-            reverse('communal_canvas-detail',
-                    kwargs={
-                        'pk': communal_canvas.id,
-                    }),
+        response = client.post(
+            reverse('pixels-list'),
             {
-                'image': json.dumps(
-                    {'data': [{
-                        'x': 0,
-                        'y': 0,
-                        'color': 'black'
-                    }]})
+              'communal_canvas': communal_canvas.id,
+              'color': 1200,
+              'token_identifier': '1',
+              'x': 0,
+              'y': 0,
             },
         )
         response.json()
         communal_canvas.refresh_from_db()
         self.assertTrue(len(communal_canvas.image['data']), 1)
+        self.assertTrue(len(communal_canvas.pixels.all()), 1)
+        self.assertTrue(communal_canvas.image['data']['0']['0'] == 1200)
 
 
 class MessageTests(TestCase):

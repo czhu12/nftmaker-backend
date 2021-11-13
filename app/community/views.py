@@ -5,7 +5,7 @@ import os
 from django.http.response import HttpResponse
 import requests
 from rest_framework import viewsets, status, permissions
-from community.serializers import ContractSerializer, MessageSerializer, CommunalCanvasSerializer, ReplySerializer
+from community.serializers import ContractSerializer, MessageSerializer, CommunalCanvasSerializer, ReplySerializer, PixelSerializer
 from community.models import Contract, Community, CommunalCanvas, Message, Reply
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -15,7 +15,6 @@ from community.serializers import CommunitySerializer
 from django.db import transaction
 
 CHAIN = "eth"
-
 
 def _moralis_get_nft_contract(address):
     response = requests.get(
@@ -94,9 +93,31 @@ class CommunityViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-class CommunalCanvasViewSet(viewsets.ModelViewSet):
-    serializer_class = CommunalCanvasSerializer
-    queryset = CommunalCanvas.objects.all()
+class PixelViewSet(viewsets.ModelViewSet):
+    serializer_class = PixelSerializer
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        pixel = serializer.save()
+        communal_canvas = pixel.communal_canvas
+        image = communal_canvas.image
+        x = str(pixel.x)
+        y = str(pixel.y)
+        if not image:
+            image = {'data': {}}
+        if not x in image['data']:
+            image['data'][x] = {}
+        image['data'][x][y] = pixel.color
+        communal_canvas.image = image
+        communal_canvas.save()
+        return pixel
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class RepliesViewSet(viewsets.ModelViewSet):
