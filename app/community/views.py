@@ -123,7 +123,7 @@ class PixelViewSet(viewsets.ModelViewSet):
         communal_canvas_id = self.request.GET.get('communal_canvas')
         if communal_canvas_id is None:
             raise Http404("Must include communal_canvas")
-        return Pixel.objects.filter(communal_canvas_id=communal_canvas_id)
+        return Pixel.objects.filter(communal_canvas_id=communal_canvas_id).order_by('-created')
 
 
 class RepliesViewSet(viewsets.ModelViewSet):
