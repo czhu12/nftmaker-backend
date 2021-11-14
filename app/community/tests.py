@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient, force_authenticate
 
-from community.models import Contract, Community, Message, CommunalCanvas
+from community.models import Contract, Community, Message, CommunalCanvas, Pixel
 from unittest.mock import patch
 import factory
 import json
@@ -22,6 +22,17 @@ class CommunalCanvasFactory(factory.django.DjangoModelFactory):
 
     community = factory.SubFactory(CommunityFactory)
     image = {}
+
+
+class PixelFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Pixel
+
+    x = 0
+    y = 0
+    color = 0
+    token_identifier = "1"
+    communal_canvas = factory.SubFactory(CommunalCanvasFactory)
 
 
 class MessageFactory(factory.django.DjangoModelFactory):
@@ -136,7 +147,21 @@ class ContractViewTests(TestCase):
 
 
 class PixelTests(TestCase):
-    def test_update(self):
+    def test_list(self):
+        communal_canvas = CommunalCanvasFactory.create()
+        PixelFactory.create()
+        PixelFactory.create(communal_canvas=communal_canvas)
+        client = APIClient()
+        response = client.get(
+            reverse('pixels-list'),
+            {
+              'communal_canvas': communal_canvas.id,
+            },
+        )
+        response.json()
+        self.assertTrue(len(response.json()['results']) == 1)
+
+    def test_post(self):
         communal_canvas = CommunalCanvasFactory.create()
         client = APIClient()
         response = client.post(

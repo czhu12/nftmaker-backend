@@ -6,7 +6,7 @@ from django.http.response import HttpResponse
 import requests
 from rest_framework import viewsets, status, permissions
 from community.serializers import ContractSerializer, MessageSerializer, CommunalCanvasSerializer, ReplySerializer, PixelSerializer
-from community.models import Contract, Community, CommunalCanvas, Message, Reply
+from community.models import Contract, Community, CommunalCanvas, Message, Reply, Pixel
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -118,6 +118,12 @@ class PixelViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def get_queryset(self):
+        communal_canvas_id = self.request.GET.get('communal_canvas')
+        if communal_canvas_id is None:
+            raise Http404("Must include communal_canvas")
+        return Pixel.objects.filter(communal_canvas_id=communal_canvas_id)
 
 
 class RepliesViewSet(viewsets.ModelViewSet):
