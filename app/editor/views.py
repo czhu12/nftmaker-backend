@@ -23,7 +23,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        if self.request.GET.get('filter') == 'all' or self.request.user.is_anonymous:
+        if self.request.GET.get('filter') == 'public' or self.request.user.is_anonymous:
             return Project.objects.filter(ispublic=True, listed=True)
         else:
             user = self.request.user
