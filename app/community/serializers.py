@@ -32,7 +32,7 @@ class CommunalCanvasSerializer(serializers.ModelSerializer):
 class PixelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pixel
-        fields = ['id', 'x', 'y', 'color', 'token_identifier', 'communal_canvas']
+        fields = ['id', 'x', 'y', 'color', 'token_identifier', 'communal_canvas', 'created']
 
 
 
