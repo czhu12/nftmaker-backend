@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
@@ -28,7 +29,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         elif self.request.GET.get('filter') == 'own':
             return Project.objects.filter(user=self.request.user)
         else:
-            return Project.objects.filter(user=self.request.user | (ispublic=True & listed=True))
+            return Project.objects.filter((Q(ispublic=True) & Q(listed=True)) | Q(user=self.request.user))
 
     def retrieve(self, request, pk=None):
         queryset = self.get_queryset()
