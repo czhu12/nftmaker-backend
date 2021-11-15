@@ -25,9 +25,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.GET.get('filter') == 'public' or self.request.user.is_anonymous:
             return Project.objects.filter(ispublic=True, listed=True)
+        elif self.request.GET.get('filter') == 'own':
+            return Project.objects.filter(user=self.request.user)
         else:
-            user = self.request.user
-            return Project.objects.filter(user=user)
+            return Project.objects.filter(user=self.request.user | (ispublic=True & listed=True))
 
     def retrieve(self, request, pk=None):
         queryset = self.get_queryset()
