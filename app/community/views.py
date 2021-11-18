@@ -19,7 +19,7 @@ DEFAULT_CHAIN = "eth"
 def _moralis_get_nft_contract(address, chain=DEFAULT_CHAIN):
     response = requests.get(
         'https://deep-index.moralis.io/api/v2/nft/{}/metadata?chain={}&format=decimal'
-        .format(address, CHAIN),
+        .format(address, chain),
         headers={
             'accept': 'application/json',
             'X-API-Key': os.environ.get('MORALIS_API_KEY')
