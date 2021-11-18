@@ -50,10 +50,13 @@ def create_community_for_contract(name, contract):
 
 
 @transaction.atomic
-def create_community_from_metadata(data):
-    contract = Contract(address=data['token_address'],
-                        contract_type=data['contract_type'],
-                        symbol=data['symbol'])
+def create_community_from_metadata(data, chain):
+    contract = Contract(
+        address=data['token_address'],
+        contract_type=data['contract_type'],
+        symbol=data['symbol'],
+        chain=chain,
+    )
     contract.save()
     community = create_community_for_contract(data['name'], contract)
     return community
@@ -89,7 +92,7 @@ class CommunityViewSet(viewsets.ViewSet):
         except Contract.DoesNotExist:
             chain = self.request.GET.get('chain', DEFAULT_CHAIN)
             data = _moralis_get_nft_contract(pk, chain=chain)
-            community = create_community_from_metadata(data)
+            community = create_community_from_metadata(data, chain=chain)
         serializer = CommunitySerializer(community)
         return Response(serializer.data)
 

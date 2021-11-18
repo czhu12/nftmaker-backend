@@ -34,7 +34,7 @@ class Contract(TimestampedUUIDModel):
         ERC1155 = 'ERC1155', _('ERC1155')
 
     class Chain(models.TextChoices):
-        ETHEREUM = 'ethereum', _('ethereum')
+        ETHEREUM = 'eth', _('eth')
         POLYGON = 'polygon', _('polygon')
 
     address = AddressField(max_length=256, unique=True)
