@@ -14,9 +14,9 @@ from django.http import JsonResponse
 from community.serializers import CommunitySerializer
 from django.db import transaction
 
-CHAIN = "eth"
+DEFAULT_CHAIN = "eth"
 
-def _moralis_get_nft_contract(address):
+def _moralis_get_nft_contract(address, chain=DEFAULT_CHAIN):
     response = requests.get(
         'https://deep-index.moralis.io/api/v2/nft/{}/metadata?chain={}&format=decimal'
         .format(address, CHAIN),
@@ -87,7 +87,8 @@ class CommunityViewSet(viewsets.ViewSet):
             if not community:
                 community = create_community_for_contract(contract.address, contract)
         except Contract.DoesNotExist:
-            data = _moralis_get_nft_contract(pk)
+            chain = self.request.GET.get('chain', DEFAULT_CHAIN)
+            data = _moralis_get_nft_contract(pk, chain=chain)
             community = create_community_from_metadata(data)
         serializer = CommunitySerializer(community)
         return Response(serializer.data)
@@ -154,11 +155,12 @@ def retrieve_cached_json(cache_key, fetch, force=False, expiration=600):
 
 class NftOwnership(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
-        cache_key = f'NFTOwnership-retrieve-{pk}'
+        chain = self.request.GET.get('chain', DEFAULT_CHAIN)
+        cache_key = f'NFTOwnership-retrieve-{pk}-{chain}'
         def _fetch():
             response = requests.get(
                 'https://deep-index.moralis.io/api/v2/{}/nft?chain={}&format=decimal'
-                .format(pk, CHAIN),
+                .format(pk, chain),
                 headers={
                     'accept': 'application/json',
                     'X-API-Key': os.environ.get('MORALIS_API_KEY')

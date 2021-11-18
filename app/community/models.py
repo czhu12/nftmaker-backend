@@ -33,12 +33,17 @@ class Contract(TimestampedUUIDModel):
         ERC721 = 'ERC721', _('ERC721')
         ERC1155 = 'ERC1155', _('ERC1155')
 
+    class Chain(models.TextChoices):
+        ETHEREUM = 'ethereum', _('ethereum')
+        POLYGON = 'polygon', _('polygon')
+
     address = AddressField(max_length=256, unique=True)
     symbol = models.CharField(max_length=256, blank=True)
     name = models.CharField(max_length=256, blank=True)
     block_number = models.IntegerField(default=0)
     block_timestamp = models.BigIntegerField(default=0)
     balance = models.CharField(default='0', max_length=256)
+    chain = models.CharField(max_length=64, default=Chain.ETHEREUM, choices=Chain.choices)
     contract_type = models.CharField(max_length=64, blank=True, choices=ContractType.choices)
     community = models.OneToOneField(
         Community,
