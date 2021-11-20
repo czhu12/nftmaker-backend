@@ -22,8 +22,20 @@ def validate_asset_by_id(asset_id, request):
     return asset.layer.group.project.user == request.user
 
 
+class ProjectPermissions(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if view.action == 'create':
+            return True
+
+        if view.action == 'update':
+            project_id = view.kwargs.get('pk')
+            return validate_project_by_id(project_id, request)
+
+
 class OwnDataPermission(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
         if request.method in permissions.SAFE_METHODS:

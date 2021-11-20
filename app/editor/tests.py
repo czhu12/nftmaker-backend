@@ -40,6 +40,39 @@ class ProjectScopeTests(TestCase):
         self.assertTrue(len(response.json()['results']) == 0)
 
 
+class PermissionsTests(TestCase):
+    def _create_user(self):
+        response = self.client.post(
+            reverse('auth_register'),
+            {
+                'username': 'chris',
+                'email': 'chris@example.com',
+                'password': 'SecretPassword!',
+                'password_confirmation': 'SecretPassword!'
+            },
+        )
+        return response.json()['token']
+
+    def test_forbidden_group_create(self):
+        project = ProjectFactory.create()
+        client = APIClient()
+        token = self._create_user()
+        response = client.post(
+            reverse('group-list'),
+            {'name': 'Group', 'project': project.id},
+            HTTP_AUTHORIZATION='Token ' + token,
+        )
+        self.assertTrue(response.status_code == 403)
+
+    def test_forbidden_project_update(self):
+        project = ProjectFactory.create()
+        client = APIClient()
+        token = self._create_user()
+        response = client.put(reverse('project-detail', kwargs={'pk': project.id}), {'name': 'Untitled-1'},
+                              HTTP_AUTHORIZATION='Token ' + token)
+        self.assertTrue(response.status_code == 403)
+
+
 class RegisterViewTests(TestCase):
     def _create_user(self):
         response = self.client.post(

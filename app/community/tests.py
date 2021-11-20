@@ -52,7 +52,7 @@ class ContractFactory(factory.django.DjangoModelFactory):
     block_number = 100
 
 
-def mock_moralis_nft_contract(address):
+def mock_moralis_nft_contract(address, chain=""):
     return {
         "token_address": address,
         "name": "OpenSea Collections",

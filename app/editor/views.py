@@ -10,7 +10,7 @@ from editor.models import Project, Group, Layer, Asset
 from editor.serializers import ProjectSerializer, GroupSerializer, LayerSerializer, AssetSerializer
 from rest_framework.viewsets import ViewSetMixin, ModelViewSet
 from rest_framework import parsers
-from editor.permissions import OwnDataPermission
+from editor.permissions import OwnDataPermission, ProjectPermissions
 
 class ProjectViewSet(viewsets.ModelViewSet):
     """
@@ -21,7 +21,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ProjectPermissions]
 
     def get_queryset(self):
         if self.request.GET.get('filter') == 'public' or self.request.user.is_anonymous:
