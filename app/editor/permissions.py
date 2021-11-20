@@ -32,6 +32,7 @@ class ProjectPermissions(permissions.BasePermission):
         if view.action == 'update':
             project_id = view.kwargs.get('pk')
             return validate_project_by_id(project_id, request)
+        return True
 
 
 class OwnDataPermission(permissions.BasePermission):
