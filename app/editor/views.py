@@ -20,16 +20,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
     DELETE /projects/1
     """
     serializer_class = ProjectSerializer
-    queryset = Project.objects.all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ProjectPermissions]
 
     def get_queryset(self):
-        if self.request.GET.get('filter') == 'public' or self.request.user.is_anonymous:
-            return Project.objects.filter(ispublic=True, listed=True)
-        elif self.request.GET.get('filter') == 'own':
-            return Project.objects.filter(user=self.request.user)
+        if self.action == 'list':
+            if self.request.GET.get('filter') == 'public' or self.request.user.is_anonymous:
+                return Project.objects.filter(ispublic=True, listed=True)
+            elif self.request.GET.get('filter') == 'own':
+                return Project.objects.filter(user=self.request.user)
+            else:
+                return Project.objects.filter((Q(ispublic=True) & Q(listed=True)) | Q(user=self.request.user))
         else:
-            return Project.objects.filter((Q(ispublic=True) & Q(listed=True)) | Q(user=self.request.user))
+            return self.request.user.projects
 
     def retrieve(self, request, pk=None):
         queryset = self.get_queryset()
