@@ -23,7 +23,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ProjectPermissions]
 
     def get_queryset(self):
-        if self.action == 'list' or self.action == 'detail':
+        import pdb;pdb.set_trace()
+        if self.action == 'list' or self.action == 'retrieve':
             if self.request.GET.get('filter') == 'public' or self.request.user.is_anonymous:
                 return Project.objects.filter(ispublic=True, listed=True)
             elif self.request.GET.get('filter') == 'own':
