@@ -19,6 +19,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     GET /projects/1
     DELETE /projects/1
     """
+    page_size = 5
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ProjectPermissions]
 
