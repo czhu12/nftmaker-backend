@@ -1,8 +1,9 @@
 from django.urls import path, include
+from django.conf.urls import url
 from rest_framework import routers
 from community import views
+from community.consumers import TicTacToeConsumer
 
-from . import views
 
 router = routers.DefaultRouter()
 router.register(r'nft', views.NftOwnership, basename="nft-ownership")
@@ -14,4 +15,5 @@ router.register(r'contracts', views.ContractViewSet, basename="contract")
 
 urlpatterns = [
     path('', include(router.urls)),
+    url(r'^ws/play/(?P<room_code>\w+)/$', TicTacToeConsumer.as_asgi()),
 ]
