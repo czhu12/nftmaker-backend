@@ -11,6 +11,12 @@ from editor.serializers import ProjectSerializer, GroupSerializer, LayerSerializ
 from rest_framework.viewsets import ViewSetMixin, ModelViewSet
 from rest_framework import parsers
 from editor.permissions import OwnDataPermission, ProjectPermissions
+from rest_framework import pagination
+
+
+class ProjectPagination(pagination.PageNumberPagination):
+       page_size = 5
+
 
 class ProjectViewSet(viewsets.ModelViewSet):
     """
@@ -19,8 +25,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     GET /projects/1
     DELETE /projects/1
     """
-    page_size = 5
-    max_page_size = 5
+    pagination_class = ProjectPagination
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ProjectPermissions]
 
