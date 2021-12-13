@@ -32,13 +32,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.action == 'list' or self.action == 'retrieve':
             if self.request.GET.get('filter') == 'public' or self.request.user.is_anonymous:
-                return Project.objects.filter(ispublic=True, listed=True)
+                return Project.objects.filter(ispublic=True, listed=True).order_by('-created')
             elif self.request.GET.get('filter') == 'own':
-                return Project.objects.filter(user=self.request.user)
+                return Project.objects.filter(user=self.request.user).order_by('-created')
             else:
-                return Project.objects.filter((Q(ispublic=True) & Q(listed=True)) | Q(user=self.request.user))
+                return Project.objects.filter((Q(ispublic=True) & Q(listed=True)) | Q(user=self.request.user)).order_by('-created')
         else:
-            return self.request.user.projects
+            return self.request.user.projects.order_by('-created')
 
     def retrieve(self, request, pk=None):
         queryset = self.get_queryset()
