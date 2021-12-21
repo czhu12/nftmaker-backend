@@ -48,7 +48,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 projects = Project.objects.filter((Q(ispublic=True) | Q(listed=True)) | Q(user=self.request.user)).order_by('-modified')
 
             if self.request.GET.get('q'):
-                import pdb; pdb.set_trace()
                 projects = projects.annotate(search=SearchVector('name')).filter(search=self.request.GET.get('q'))
         else:
             projects = self.request.user.projects.order_by('-modified')
