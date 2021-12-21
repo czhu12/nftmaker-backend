@@ -11,7 +11,9 @@ from editor.serializers import ProjectSerializer, GroupSerializer, LayerSerializ
 from rest_framework.viewsets import ViewSetMixin, ModelViewSet
 from rest_framework import parsers
 from editor.permissions import OwnDataPermission, ProjectPermissions
+from users.models import User
 from rest_framework import pagination
+from django.http import JsonResponse
 
 
 class ProjectPagination(pagination.PageNumberPagination):
@@ -84,3 +86,10 @@ class AssetViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, Destr
     serializer_class = AssetSerializer
     parser_classes = (parsers.MultiPartParser,)
     permission_classes = [permissions.IsAuthenticated, OwnDataPermission]
+
+
+def statistics_view(request):
+    assets_count = Asset.objects.count()
+    projects_count = Project.objects.count()
+    users_count = User.objects.count()
+    return JsonResponse({'artists': users_count, 'projects': projects_count, 'images': assets_count})
