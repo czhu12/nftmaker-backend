@@ -17,6 +17,7 @@ from django.http import JsonResponse
 from django.db.models.functions import TruncDay
 from django.db.models import Count
 from datetime import datetime, timedelta
+from django.contrib.postgres.search import SearchVector
 
 
 class ProjectPagination(pagination.PageNumberPagination):
@@ -35,17 +36,23 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ProjectPermissions]
 
     def get_queryset(self):
+        projects = None
         if self.action == 'list' or self.action == 'retrieve':
             if self.request.GET.get('filter') == 'public' or self.request.user.is_anonymous:
-                return Project.objects.filter(ispublic=True, listed=True).order_by('-modified')
+                projects = Project.objects.filter(ispublic=True, listed=True).order_by('-modified')
             elif self.request.GET.get('filter') == 'own':
-                return Project.objects.filter(user=self.request.user).order_by('-modified')
+                projects = Project.objects.filter(user=self.request.user).order_by('-modified')
             elif self.request.GET.get('filter') == 'all' and self.request.user.is_superuser:
-                return Project.objects.order_by('-modified')
+                projects = Project.objects.order_by('-modified')
             else:
-                return Project.objects.filter((Q(ispublic=True) | Q(listed=True)) | Q(user=self.request.user)).order_by('-modified')
+                projects = Project.objects.filter((Q(ispublic=True) | Q(listed=True)) | Q(user=self.request.user)).order_by('-modified')
+
+            if self.request.GET.get('q'):
+                projects.annotate(search=SearchVector('name')).filter(search=self.request.GET.get('q'))
         else:
-            return self.request.user.projects.order_by('-modified')
+            projects = self.request.user.projects.order_by('-modified')
+
+        return projects
 
     def retrieve(self, request, pk=None):
         queryset = self.get_queryset()
