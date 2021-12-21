@@ -14,6 +14,9 @@ from editor.permissions import OwnDataPermission, ProjectPermissions
 from users.models import User
 from rest_framework import pagination
 from django.http import JsonResponse
+from django.db.models.functions import TruncDay
+from django.db.models import Count
+from datetime import datetime, timedelta
 
 
 class ProjectPagination(pagination.PageNumberPagination):
@@ -88,8 +91,25 @@ class AssetViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, Destr
     permission_classes = [permissions.IsAuthenticated, OwnDataPermission]
 
 
+def _statstics_for_model(model_class, key='created'):
+    filters = {}
+    filters[key + "__gte"] = datetime.now()-timedelta(days=7)
+    stats = model_class.objects.filter(
+            **filters
+        ).annotate(
+            day=TruncDay(key)
+        ).values('day').annotate(c=Count('id')).values('day', 'c')
+    count = model_class.objects.count()
+
+    return [list(stats), count]
+
 def statistics_view(request):
-    assets_count = Asset.objects.count()
-    projects_count = Project.objects.count()
-    users_count = User.objects.count()
-    return JsonResponse({'artists': users_count, 'projects': projects_count, 'images': assets_count})
+    project_stats, project_count = _statstics_for_model(Project)
+    asset_stats, asset_count = _statstics_for_model(Asset)
+    user_stats, user_count = _statstics_for_model(User, key='date_joined')
+
+    return JsonResponse({
+        'artists': { 'stats': user_stats, 'count': user_count },
+        'projects': { 'stats': project_stats, 'count': project_count },
+        'images': { 'stats': asset_stats, 'count': asset_count },
+    })
