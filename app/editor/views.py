@@ -42,7 +42,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 projects = Project.objects.filter(ispublic=True, listed=True).order_by('-modified')
             elif self.request.GET.get('filter') == 'own':
                 projects = Project.objects.filter(user=self.request.user).order_by('-modified')
-            elif self.request.GET.get('filter') == 'all' and self.request.user.is_superuser:
+            elif self.request.user.is_superuser:
                 projects = Project.objects.order_by('-modified')
             else:
                 projects = Project.objects.filter((Q(ispublic=True) | Q(listed=True)) | Q(user=self.request.user)).order_by('-modified')
