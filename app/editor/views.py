@@ -57,7 +57,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         queryset = self.get_queryset()
         project = get_object_or_404(queryset, pk=pk)
-        if not project.ispublic and request.user != project.user:
+        if (not project.listed) and (request.user != project.user) and not request.user.is_superuser:
             return Response("FORBIDDEN", status=status.HTTP_403_FORBIDDEN)
 
         serializer = ProjectSerializer(project)
