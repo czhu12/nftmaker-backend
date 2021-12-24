@@ -174,5 +174,4 @@ class NftOwnership(viewsets.ViewSet):
 
         data = retrieve_cached_json(cache_key, _fetch)
 
-
         return JsonResponse(data)

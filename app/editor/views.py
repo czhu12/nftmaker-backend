@@ -18,6 +18,7 @@ from django.db.models.functions import TruncDay
 from django.db.models import Count
 from datetime import datetime, timedelta
 from django.contrib.postgres.search import SearchVector
+from base.cache import retrieve_cached_json
 
 
 class ProjectPagination(pagination.PageNumberPagination):
@@ -100,7 +101,7 @@ class AssetViewSet(viewsets.ViewSetMixin, CreateAPIView, UpdateModelMixin, Destr
     permission_classes = [permissions.IsAuthenticated, OwnDataPermission]
 
 
-def _statstics_for_model(model_class, key='created'):
+def _statistics_for_model(model_class, key='created'):
     filters = {}
     filters[key + "__gte"] = datetime.now()-timedelta(days=7)
     stats = model_class.objects.filter(
@@ -108,15 +109,27 @@ def _statstics_for_model(model_class, key='created'):
         ).annotate(
             day=TruncDay(key)
         ).values('day').annotate(c=Count('id')).values('day', 'c')
+    stats = [{'day': s['day'].isoformat(), 'c': s['c']} for s in stats]
+    import pdb; pdb.set_trace()
     count = model_class.objects.count()
     week_count = model_class.objects.filter(**filters).count()
 
     return [list(stats), count, week_count]
 
+
+def _cached_statistics_for_model(model_class, key='created'):
+    def _fetch():
+        return _statistics_for_model(model_class, key=key)
+
+    cache_key = "stats-{}".format(model_class.__name__)
+    data = retrieve_cached_json(cache_key, _fetch)
+    return data
+
+
 def statistics_view(request):
-    project_stats, project_count, project_week_count = _statstics_for_model(Project)
-    asset_stats, asset_count, asset_week_count = _statstics_for_model(Asset)
-    user_stats, user_count, user_week_count = _statstics_for_model(User, key='date_joined')
+    project_stats, project_count, project_week_count = _cached_statistics_for_model(Project)
+    asset_stats, asset_count, asset_week_count = _cached_statistics_for_model(Asset)
+    user_stats, user_count, user_week_count = _cached_statistics_for_model(User, key='date_joined')
 
     return JsonResponse({
         'artists': { 'stats': user_stats, 'count': user_count, 'week_count': user_week_count },
