@@ -109,7 +109,7 @@ def _statstics_for_model(model_class, key='created'):
             day=TruncDay(key)
         ).values('day').annotate(c=Count('id')).values('day', 'c')
     count = model_class.objects.count()
-    week_count = model_class.objects.filter(filters)
+    week_count = model_class.objects.filter(**filters).count()
 
     return [list(stats), count, week_count]
 
