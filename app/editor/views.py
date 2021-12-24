@@ -110,7 +110,6 @@ def _statistics_for_model(model_class, key='created'):
             day=TruncDay(key)
         ).values('day').annotate(c=Count('id')).values('day', 'c')
     stats = [{'day': s['day'].isoformat(), 'c': s['c']} for s in stats]
-    import pdb; pdb.set_trace()
     count = model_class.objects.count()
     week_count = model_class.objects.filter(**filters).count()
 
