@@ -109,16 +109,17 @@ def _statstics_for_model(model_class, key='created'):
             day=TruncDay(key)
         ).values('day').annotate(c=Count('id')).values('day', 'c')
     count = model_class.objects.count()
+    week_count = model_class.filter(filters)
 
-    return [list(stats), count]
+    return [list(stats), count, week_count]
 
 def statistics_view(request):
-    project_stats, project_count = _statstics_for_model(Project)
-    asset_stats, asset_count = _statstics_for_model(Asset)
-    user_stats, user_count = _statstics_for_model(User, key='date_joined')
+    project_stats, project_count, project_week_count = _statstics_for_model(Project)
+    asset_stats, asset_count, asset_week_count = _statstics_for_model(Asset)
+    user_stats, user_count, user_week_count = _statstics_for_model(User, key='date_joined')
 
     return JsonResponse({
-        'artists': { 'stats': user_stats, 'count': user_count },
-        'projects': { 'stats': project_stats, 'count': project_count },
-        'images': { 'stats': asset_stats, 'count': asset_count },
+        'artists': { 'stats': user_stats, 'count': user_count, 'week_count': user_week_count },
+        'projects': { 'stats': project_stats, 'count': project_count, 'week_count': project_week_count },
+        'images': { 'stats': asset_stats, 'count': asset_count, 'week_count': asset_week_count },
     })
