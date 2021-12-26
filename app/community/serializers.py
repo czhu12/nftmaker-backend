@@ -13,7 +13,7 @@ class ContractSerializer(serializers.ModelSerializer):
 class ReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
-        fields = ['id', 'body', 'message', 'token_identifier']
+        fields = ['id', 'token_identifier', 'body', 'created', 'message']
 
 class MessageSerializer(serializers.ModelSerializer):
     replies = ReplySerializer(many=True, read_only=True)
