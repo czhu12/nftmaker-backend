@@ -18,8 +18,6 @@ def obtain_auth_token_via_nonce(request):
     return address
 
 
-
-
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
@@ -33,12 +31,14 @@ class RegisterView(generics.CreateAPIView):
         token, created = Token.objects.get_or_create(user=serializer.instance)
         return Response({'token': token.key}, status=status.HTTP_201_CREATED, headers=headers)
 
+
 class UserView(generics.GenericAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         return Response({
+            "id": request.user.id,
             "username": request.user.username,
             "email": request.user.email
         }, status=status.HTTP_200_OK)
