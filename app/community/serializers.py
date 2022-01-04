@@ -13,14 +13,14 @@ class ContractSerializer(serializers.ModelSerializer):
 class ReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
-        fields = ['id', 'body', 'message', 'token_identifier']
+        fields = ['id', 'token_identifier', 'body', 'created', 'message']
 
 class MessageSerializer(serializers.ModelSerializer):
     replies = ReplySerializer(many=True, read_only=True)
 
     class Meta:
         model = Message
-        fields = ['token_identifier', 'body', 'created', 'community', 'replies']
+        fields = ['id', 'token_identifier', 'body', 'created', 'community', 'replies']
 
 
 class CommunalCanvasSerializer(serializers.ModelSerializer):
