@@ -1,4 +1,5 @@
 from editor.models import Project, Group, Layer, Asset
+from community.serializers import ContractSerializer
 from rest_framework import serializers
 
 
@@ -26,6 +27,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True, read_only=True)
+    contract = ContractSerializer(read_only=True)
 
     def create(self, validated_data):
         project = Project.objects.create(
@@ -37,4 +39,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'description', 'website', 'opensea', 'twitter', 'discord', 'etherscan', 'width', 'height', 'ispublic', 'listed', 'groups']
+        fields = [
+            'id', 'name', 'description', 'website', 'opensea', 'twitter',
+            'discord', 'etherscan', 'width', 'height', 'ispublic', 'listed',
+            'groups', 'contract'
+        ]

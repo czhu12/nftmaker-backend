@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient, force_authenticate
+from editor.services import ConnectContractWithProject
 
 from editor.models import Group, User, Project
 from users.models import User
@@ -22,6 +23,15 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     name = 'Project'
     ispublic = False
     user = factory.SubFactory(UserFactory)
+
+
+class ConnectContractWithProjectTests(TestCase):
+    def test_create_contract(self):
+        project = ProjectFactory.create(ispublic=True, listed=True)
+        address = "0xffffff"
+        ConnectContractWithProject(address, project).execute()
+        project.refresh_from_db()
+        self.assertTrue(project.contract.address == address)
 
 
 class ProjectScopeTests(TestCase):

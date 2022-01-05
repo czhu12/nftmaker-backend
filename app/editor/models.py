@@ -1,6 +1,7 @@
 from django.db import models
 from base.models import TimestampedUUIDModel
 from users.models import User
+from community.models import Contract
 
 
 class Project(TimestampedUUIDModel):
@@ -18,6 +19,14 @@ class Project(TimestampedUUIDModel):
     listed = models.BooleanField(default=False)
     width = models.IntegerField(default=512)
     height = models.IntegerField(default=512)
+
+    contract = models.OneToOneField(
+        Contract,
+        on_delete=models.CASCADE,
+        related_name="project",
+        null=True,
+        blank=True,
+    )
 
 
 class Group(TimestampedUUIDModel):
