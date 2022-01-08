@@ -36,6 +36,7 @@ class Contract(TimestampedUUIDModel):
     class Chain(models.TextChoices):
         ETHEREUM = 'eth', _('eth')
         POLYGON = 'polygon', _('polygon')
+        RINKEBY = 'rinkeby', _('rinkeby')
 
     address = AddressField(max_length=256, unique=True)
     symbol = models.CharField(max_length=256, blank=True)
