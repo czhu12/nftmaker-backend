@@ -1,4 +1,5 @@
 app/nftmaker
+scripts/aws_nft_trigger/package/
 credentials/
 .vscode/
 .idea/
