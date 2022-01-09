@@ -71,6 +71,7 @@ class Command(BaseCommand):
             projects = Project.objects.all()
             for project in projects:
                 body = ProjectSerializer(project).data
+                body['username'] = project.user.username
                 response = requests.post(endpoint + '/backfill_editor', body)
                 if response.status_code != 200:
                     raise Exception(response.text)
