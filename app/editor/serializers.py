@@ -4,9 +4,13 @@ from rest_framework import serializers
 
 
 class AssetSerializer(serializers.ModelSerializer):
+    created_at = serializers.SerializerMethodField('get_created_at')
+    def get_created_at(self, obj):
+        return obj.created.strftime("%Y-%m-%d %H:%M:%S")
+
     class Meta:
         model = Asset
-        fields = ['id', 'name', 'rarity', 'image_file', 'layer']
+        fields = ['id', 'name', 'rarity', 'image_file', 'layer', 'created_at']
 
 
 class LayerSerializer(serializers.ModelSerializer):
@@ -28,6 +32,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True, read_only=True)
     contract = ContractSerializer(read_only=True)
+    created_at = serializers.SerializerMethodField('get_created_at')
 
     def create(self, validated_data):
         project = Project.objects.create(
@@ -37,10 +42,13 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         return project
 
+    def get_created_at(self, obj):
+        return obj.created.strftime("%Y-%m-%d %H:%M:%S")
+
     class Meta:
         model = Project
         fields = [
             'id', 'name', 'description', 'website', 'opensea', 'twitter',
             'discord', 'etherscan', 'width', 'height', 'ispublic', 'listed',
-            'groups', 'contract'
+            'groups', 'contract', 'created_at'
         ]
