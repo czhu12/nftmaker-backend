@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+import os
 import requests
 from users.models import *
 from editor.models import *
@@ -59,11 +60,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         endpoint = options['endpoint']
+        headers = { 'X-Authorization': os.environ.get('BACKFILL_SECRET') }
         if options['type'] == 'users':
             users = User.objects.all()
             for user in users:
                 body = UserSerializer(user).data
-                response = requests.post(endpoint + '/backfill_users', body)
+                response = requests.post(endpoint + '/backfill_users', json=body, headers=headers)
                 if response.status_code != 200:
                     raise Exception(response.text)
 
@@ -72,7 +74,7 @@ class Command(BaseCommand):
             for project in projects:
                 body = ProjectSerializer(project).data
                 body['username'] = project.user.username
-                response = requests.post(endpoint + '/backfill_editor', body)
+                response = requests.post(endpoint + '/backfill_editor', json=body, headers=headers)
                 if response.status_code != 200:
                     raise Exception(response.text)
 
@@ -80,7 +82,7 @@ class Command(BaseCommand):
             contracts = Contract.objects.all()
             for contract in contracts:
                 body = ContractSerializer(contract).data
-                response = requests.post(endpoint + '/backfill_contract', body)
+                response = requests.post(endpoint + '/backfill_contract', json=body, headers=headers)
                 if response.status_code != 200:
                     raise Exception(response.text)
 
@@ -88,6 +90,6 @@ class Command(BaseCommand):
             communities = Community.objects.all()
             for community in communities:
                 body = BigCommunitySerializer(community).data
-                response = requests.post(endpoint + '/backfill_communities', body)
+                response = requests.post(endpoint + '/backfill_communities', json=body, headers=headers)
                 if response.status_code != 200:
                     raise Exception(response.text)
