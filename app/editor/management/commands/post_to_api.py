@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+import tqdm
 import os
 import requests
 from users.models import *
@@ -63,7 +64,7 @@ class Command(BaseCommand):
         headers = { 'X-Authorization': os.environ.get('BACKFILL_SECRET') }
         if options['type'] == 'users':
             users = User.objects.all()
-            for user in users:
+            for user in tqdm.tqdm(users):
                 body = UserSerializer(user).data
                 response = requests.post(endpoint + '/backfill_users', json=body, headers=headers)
                 if response.status_code != 200:
@@ -71,7 +72,7 @@ class Command(BaseCommand):
 
         if options['type'] == 'editor':
             projects = Project.objects.all()
-            for project in projects:
+            for project in tqdm.tqdm(projects):
                 body = ProjectSerializer(project).data
                 body['username'] = project.user.username
                 response = requests.post(endpoint + '/backfill_editor', json=body, headers=headers)
@@ -80,7 +81,7 @@ class Command(BaseCommand):
 
         if options['type'] == 'contracts':
             contracts = Contract.objects.all()
-            for contract in contracts:
+            for contract in tqdm.tqdm(contracts):
                 body = ContractSerializer(contract).data
                 response = requests.post(endpoint + '/backfill_contract', json=body, headers=headers)
                 if response.status_code != 200:
@@ -88,7 +89,7 @@ class Command(BaseCommand):
 
         if options['type'] == 'communities':
             communities = Community.objects.all()
-            for community in communities:
+            for community in tqdm.tqdm(communities):
                 body = BigCommunitySerializer(community).data
                 response = requests.post(endpoint + '/backfill_communities', json=body, headers=headers)
                 if response.status_code != 200:
