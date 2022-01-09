@@ -40,7 +40,7 @@ class BigCommunitySerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField('get_created_at')
     def get_created_at(self, obj):
-        return obj.created.strftime("%Y-%m-%d %H:%M:%S")
+        return obj.date_joined.strftime("%Y-%m-%d %H:%M:%S")
 
     class Meta:
         model = User
