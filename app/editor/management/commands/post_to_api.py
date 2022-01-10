@@ -67,19 +67,21 @@ class Command(BaseCommand):
         endpoint = options['endpoint']
         headers = { 'X-Authorization': os.environ.get('BACKFILL_SECRET') }
         jobs = Queue()
+        pbar = tqdm.tqdm(total=User.objects.all().count())
         def do_send(q):
             while not q.empty():
+
                 value = q.get()
                 body = value['serializer_class'](value['model']).data
                 response = requests.post(value['endpoint'], json=body, headers=headers)
-                print(q.qsize())
+                pbar.update()
                 if response.status_code != 200:
                     raise Exception(response.text)
                 q.task_done()
 
         if options['type'] == 'users':
             users = User.objects.all()
-            for user in tqdm.tqdm(users):
+            for user in users:
                 value = {
                   'serializer_class': UserSerializer,
                   'model': user,
