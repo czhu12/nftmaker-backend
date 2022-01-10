@@ -90,7 +90,8 @@ class Command(BaseCommand):
                 response = requests.post(value['endpoint'], json=json.loads(json.dumps(body, cls=UUIDEncoder)), headers=headers)
                 pbar.update()
                 if response.status_code != 200:
-                    raise Exception(response.text)
+                  print("Failed to save: ")
+                  print(body)
                 q.task_done()
 
         if options['type'] == 'users':
