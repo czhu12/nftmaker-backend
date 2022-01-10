@@ -85,7 +85,6 @@ class Command(BaseCommand):
                 value = q.get()
                 body = value['serializer_class'](value['model']).data
                 if value['serializer_class'] == ProjectSerializer:
-                    print(value['model'].user.username)
                     body['username'] = value['model'].user.username
                 response = requests.post(value['endpoint'], json=json.loads(json.dumps(body, cls=UUIDEncoder)), headers=headers)
                 pbar.update()
