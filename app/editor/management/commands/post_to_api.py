@@ -67,7 +67,8 @@ class Command(BaseCommand):
         endpoint = options['endpoint']
         headers = { 'X-Authorization': os.environ.get('BACKFILL_SECRET') }
         jobs = Queue()
-        pbar = tqdm.tqdm(total=User.objects.all().count())
+        pbar = tqdm.tqdm()
+
         def do_send(q):
             while not q.empty():
 
@@ -89,43 +90,41 @@ class Command(BaseCommand):
                 }
                 jobs.put(value)
 
-        #if options['type'] == 'users':
-        #    users = User.objects.all()
-        #    for user in tqdm.tqdm(users):
-        #        body = UserSerializer(user).data
-        #        response = requests.post(endpoint + '/backfill_users', json=body, headers=headers)
-        #        if response.status_code != 200:
-        #            raise Exception(response.text)
-
         if options['type'] == 'editor':
             projects = Project.objects.all()
-            for project in tqdm.tqdm(projects):
-                body = ProjectSerializer(project).data
-                body['username'] = project.user.username
-                response = requests.post(endpoint + '/backfill_editor', json=body, headers=headers)
-                if response.status_code != 200:
-                    raise Exception(response.text)
+            for project in projects:
+                value = {
+                  'serializer_class': ProjectSerializer,
+                  'model': project,
+                  'endpoint': endpoint + '/backfill_editor',
+                }
+                jobs.put(value)
 
         if options['type'] == 'contracts':
             contracts = Contract.objects.all()
-            for contract in tqdm.tqdm(contracts):
-                body = ContractSerializer(contract).data
-                response = requests.post(endpoint + '/backfill_contract', json=body, headers=headers)
-                if response.status_code != 200:
-                    raise Exception(response.text)
+            for contract in contracts:
+                value = {
+                  'serializer_class': ContractSerializer,
+                  'model': contract,
+                  'endpoint': endpoint + '/backfill_contract',
+                }
+                jobs.put(value)
 
         if options['type'] == 'communities':
             communities = Community.objects.all()
-            for community in tqdm.tqdm(communities):
-                body = BigCommunitySerializer(community).data
-                response = requests.post(endpoint + '/backfill_communities', json=body, headers=headers)
-                if response.status_code != 200:
-                    raise Exception(response.text)
+            for community in communities:
+                value = {
+                  'serializer_class': BigCommunitySerializer,
+                  'model': community,
+                  'endpoint': endpoint + '/backfill_communities',
+                }
+                jobs.put(value)
 
         for i in range(10):
             worker = threading.Thread(target=do_send, args=(jobs,))
             worker.start()
 
+        pbar.total = jobs.qsize()
         print("waiting for queue to complete", jobs.qsize(), "tasks")
         jobs.join()
 
