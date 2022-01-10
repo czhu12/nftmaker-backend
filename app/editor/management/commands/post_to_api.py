@@ -39,7 +39,7 @@ class BigCommunalCanvasSerializer(serializers.ModelSerializer):
 
 class BigCommunitySerializer(serializers.ModelSerializer):
     messages = MessageSerializer(read_only=True, many=True)
-    communal_canvas = BigCommunalCanvasSerializer(read_only=True, many=True)
+    communal_canvas = BigCommunalCanvasSerializer(read_only=True)
     created_at = serializers.SerializerMethodField('get_created_at')
 
     def get_created_at(self, obj):
