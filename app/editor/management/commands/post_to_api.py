@@ -73,9 +73,11 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('endpoint', type=str)
         parser.add_argument('type', type=str)
+        parser.add_argument('threads', type=int)
 
     def handle(self, *args, **options):
         endpoint = options['endpoint']
+        threads = options['threads']
         headers = { 'X-Authorization': os.environ.get('BACKFILL_SECRET') }
         jobs = Queue()
         pbar = tqdm.tqdm()
@@ -133,7 +135,7 @@ class Command(BaseCommand):
                 }
                 jobs.put(value)
 
-        for i in range(10):
+        for i in range(threads):
             worker = threading.Thread(target=do_send, args=(jobs,))
             worker.start()
 
