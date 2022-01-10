@@ -82,10 +82,12 @@ class Command(BaseCommand):
 
         def do_send(q):
             while not q.empty():
-
                 value = q.get()
                 body = value['serializer_class'](value['model']).data
-                response = requests.post(value['endpoint'], json=json.dumps(body, cls=UUIDEncoder), headers=headers)
+                if value['serializer_class'] == ProjectSerializer:
+                    print(value['model'].user.username)
+                    body['username'] = value['model'].user.username
+                response = requests.post(value['endpoint'], json=json.loads(json.dumps(body, cls=UUIDEncoder)), headers=headers)
                 pbar.update()
                 if response.status_code != 200:
                     raise Exception(response.text)
