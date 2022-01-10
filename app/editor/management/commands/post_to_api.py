@@ -122,7 +122,7 @@ class Command(BaseCommand):
                 if response.status_code != 200:
                     raise Exception(response.text)
 
-        for i in range(3):
+        for i in range(10):
             worker = threading.Thread(target=do_send, args=(jobs,))
             worker.start()
 
