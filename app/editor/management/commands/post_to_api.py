@@ -12,6 +12,17 @@ from community.models import *
 from editor.serializers import ProjectSerializer
 from community.serializers import *
 from rest_framework import serializers
+import json
+from uuid import UUID
+
+
+class UUIDEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, UUID):
+            # if the obj is uuid, we simply return the value of uuid
+            return obj.hex
+        return json.JSONEncoder.default(self, obj)
+
 
 class BigCommunalCanvasSerializer(serializers.ModelSerializer):
     pixels = PixelSerializer(read_only=True, many=True)
@@ -74,7 +85,7 @@ class Command(BaseCommand):
 
                 value = q.get()
                 body = value['serializer_class'](value['model']).data
-                response = requests.post(value['endpoint'], json=body, headers=headers)
+                response = requests.post(value['endpoint'], json=json.dumps(body, cls=UUIDEncoder), headers=headers)
                 pbar.update()
                 if response.status_code != 200:
                     raise Exception(response.text)
