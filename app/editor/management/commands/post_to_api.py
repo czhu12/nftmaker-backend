@@ -1,4 +1,8 @@
 from django.core.management.base import BaseCommand
+import threading, time, random
+
+from queue import Queue
+
 import tqdm
 import os
 import requests
@@ -62,13 +66,34 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         endpoint = options['endpoint']
         headers = { 'X-Authorization': os.environ.get('BACKFILL_SECRET') }
+        jobs = Queue()
+        def do_send(q):
+            while not q.empty():
+                value = q.get()
+                body = value['serializer_class'](value['model']).data
+                response = requests.post(value['endpoint'], json=body, headers=headers)
+                print(q.qsize())
+                if response.status_code != 200:
+                    raise Exception(response.text)
+                q.task_done()
+
         if options['type'] == 'users':
             users = User.objects.all()
             for user in tqdm.tqdm(users):
-                body = UserSerializer(user).data
-                response = requests.post(endpoint + '/backfill_users', json=body, headers=headers)
-                if response.status_code != 200:
-                    raise Exception(response.text)
+                value = {
+                  'serializer_class': UserSerializer,
+                  'model': user,
+                  'endpoint': endpoint + '/backfill_users',
+                }
+                jobs.put(value)
+
+        #if options['type'] == 'users':
+        #    users = User.objects.all()
+        #    for user in tqdm.tqdm(users):
+        #        body = UserSerializer(user).data
+        #        response = requests.post(endpoint + '/backfill_users', json=body, headers=headers)
+        #        if response.status_code != 200:
+        #            raise Exception(response.text)
 
         if options['type'] == 'editor':
             projects = Project.objects.all()
@@ -94,3 +119,11 @@ class Command(BaseCommand):
                 response = requests.post(endpoint + '/backfill_communities', json=body, headers=headers)
                 if response.status_code != 200:
                     raise Exception(response.text)
+
+        for i in range(3):
+            worker = threading.Thread(target=do_send, args=(jobs,))
+            worker.start()
+
+        print("waiting for queue to complete", jobs.qsize(), "tasks")
+        jobs.join()
+
