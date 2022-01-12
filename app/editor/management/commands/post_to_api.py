@@ -74,6 +74,7 @@ class Command(BaseCommand):
         parser.add_argument('endpoint', type=str)
         parser.add_argument('type', type=str)
         parser.add_argument('threads', type=int)
+        parser.add_argument('offset', type=int)
 
     def handle(self, *args, **options):
         endpoint = options['endpoint']
@@ -92,7 +93,7 @@ class Command(BaseCommand):
                 pbar.update()
                 if response.status_code != 200:
                   print("Failed to save: ")
-                  print(body)
+                  print(response.text)
                 q.task_done()
 
         if options['type'] == 'users':
@@ -106,7 +107,7 @@ class Command(BaseCommand):
                 jobs.put(value)
 
         if options['type'] == 'editor':
-            projects = Project.objects.all()
+            projects = Project.objects.all().order_by('created')[options['offset']:]
             for project in projects:
                 value = {
                   'serializer_class': ProjectSerializer,
